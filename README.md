@@ -1,10 +1,10 @@
 # Cold Open
 
-A Chrome/Arc browser extension that automatically injects IMDB ratings into Reddit episode and season discussion threads.
+A Chrome/Arc browser extension that injects IMDB ratings into Reddit episode and season discussion threads, and surfaces Reddit discussions on IMDB pages.
 
 ## What it does
 
-When you open a Reddit discussion thread for a TV episode or season, Cold Open detects the show and episode from the thread title and injects a card above the comments with:
+**On Reddit**: when you open a TV episode or season discussion thread, Cold Open detects the show and episode from the thread title and injects a card above the comments with:
 
 - Episode/season IMDB rating and vote count
 - Release date and runtime
@@ -14,6 +14,8 @@ When you open a Reddit discussion thread for a TV episode or season, Cold Open d
 - For season threads: per-episode ratings, highest/lowest rated episodes, and season average
 
 ![Cold Open screenshot](public/screenshot.png)
+
+**On IMDB**: when you're on an episode or movie page, Cold Open searches Reddit for relevant discussion threads and injects a card linking to them.
 
 ## Supported thread formats
 
@@ -29,7 +31,8 @@ When you open a Reddit discussion thread for a TV episode or season, Cold Open d
 
 ## Features
 
-- Auto light/dark mode detection to match Reddit's theme
+- Works in both directions: Reddit to IMDB and IMDB to Reddit
+- Auto light/dark mode detection to match the page theme
 - Poster thumbnail pulled from OMDB
 - 24-hour cache so repeated visits don't re-fetch
 - Dismiss with the button or press Esc
@@ -50,4 +53,3 @@ When you open a Reddit discussion thread for a TV episode or season, Cold Open d
 - React 18 + TypeScript
 - Vite
 - OMDB API
-- `chrome.storage.local` for caching
