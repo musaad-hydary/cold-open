@@ -17,6 +17,8 @@ A Chrome/Arc browser extension that injects IMDB ratings into Reddit episode and
 
 **On IMDB**: when you're on an episode or movie page, Cold Open searches Reddit for relevant discussion threads and injects a card linking to them.
 
+![Cold Open screenshot](public/screenshot2.png)
+
 ## Supported thread formats
 
 - `Show S01E01 - Episode Title`
