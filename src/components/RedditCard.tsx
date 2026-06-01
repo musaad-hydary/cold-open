@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { RedditThread } from "../utils/reddit";
 
 interface Props {
@@ -28,13 +28,28 @@ const lightColors = {
   accentDim: "#ff450033",
 };
 
+function timeAgo(utc: number): string {
+  const diff = Date.now() / 1000 - utc;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 31536000) return `${Math.floor(diff / 2592000)}mo ago`;
+  return `${Math.floor(diff / 31536000)}y ago`;
+}
+
 export function RedditCard({
   threads,
   title,
   onDismiss,
   light = false,
 }: Props) {
+  const [spoilerRevealed, setSpoilerRevealed] = useState(false);
+  const [sortBy, setSortBy] = useState<"comments" | "score">("comments");
   const c = light ? lightColors : darkColors;
+
+  const sorted = [...threads].sort((a, b) =>
+    sortBy === "comments" ? b.numComments - a.numComments : b.score - a.score,
+  );
 
   return (
     <div
@@ -52,17 +67,61 @@ export function RedditCard({
           </span>
         </div>
 
-        <div style={{ ...s.pageTitle, color: c.muted }}>
-          discussion threads for {title.toLowerCase()}
+        <div style={s.subheader}>
+          <div style={{ ...s.pageTitle, color: c.muted }}>
+            discussion threads for {title.toLowerCase()}
+          </div>
+          <div style={s.sortRow}>
+            <span style={{ ...s.sortLabel, color: c.muted }}>sort by</span>
+            <button
+              onClick={() => setSortBy("comments")}
+              style={{
+                ...s.sortBtn,
+                color: sortBy === "comments" ? c.accent : c.muted,
+                borderColor: sortBy === "comments" ? c.accent : c.border,
+                background: c.surface,
+              }}
+            >
+              comments
+            </button>
+            <button
+              onClick={() => setSortBy("score")}
+              style={{
+                ...s.sortBtn,
+                color: sortBy === "score" ? c.accent : c.muted,
+                borderColor: sortBy === "score" ? c.accent : c.border,
+                background: c.surface,
+              }}
+            >
+              upvotes
+            </button>
+          </div>
         </div>
 
-        {threads.length === 0 ? (
+        {!spoilerRevealed ? (
+          <div
+            style={{
+              ...s.spoilerBanner,
+              borderColor: c.border,
+              background: c.surface,
+            }}
+            onClick={() => setSpoilerRevealed(true)}
+          >
+            <span style={{ ...s.spoilerIcon, color: c.accent }}>!</span>
+            <span style={{ ...s.spoilerText, color: c.muted }}>
+              these threads may contain spoilers
+            </span>
+            <span style={{ ...s.spoilerReveal, color: c.accent }}>
+              show anyway
+            </span>
+          </div>
+        ) : threads.length === 0 ? (
           <div style={{ ...s.empty, color: c.muted }}>
             no discussion threads found
           </div>
         ) : (
           <div style={s.threadList}>
-            {threads.slice(0, 5).map((t, i) => (
+            {sorted.slice(0, 3).map((t, i) => (
               <a
                 key={i}
                 href={t.url}
@@ -85,6 +144,11 @@ export function RedditCard({
                   <span style={{ ...s.metaBit, color: c.muted }}>
                     {t.numComments.toLocaleString()} comments
                   </span>
+                  {t.createdUtc > 0 && (
+                    <span style={{ ...s.metaBit, color: c.muted }}>
+                      {timeAgo(t.createdUtc)}
+                    </span>
+                  )}
                 </div>
               </a>
             ))}
@@ -101,6 +165,7 @@ const s: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     borderRadius: "6px",
     marginBottom: "16px",
+    maxWidth: "680px",
   },
   sheen: {
     position: "absolute",
@@ -142,12 +207,58 @@ const s: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     fontFamily: "'Space Mono', monospace",
   },
+  subheader: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "12px",
+  },
   pageTitle: {
     fontSize: "9px",
     fontFamily: "'Space Mono', monospace",
     letterSpacing: ".06em",
-    marginBottom: "10px",
     textTransform: "uppercase",
+  },
+  sortRow: { display: "flex", alignItems: "center", gap: "6px" },
+  sortLabel: {
+    fontSize: "8px",
+    fontFamily: "'Space Mono', monospace",
+    letterSpacing: ".06em",
+  },
+  sortBtn: {
+    fontSize: "8px",
+    fontFamily: "'Space Mono', monospace",
+    letterSpacing: ".06em",
+    border: "1px solid",
+    borderRadius: "3px",
+    padding: "2px 7px",
+    cursor: "pointer",
+  },
+  spoilerBanner: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    border: "1px solid",
+    borderRadius: "4px",
+    padding: "10px 12px",
+    cursor: "pointer",
+    marginBottom: "4px",
+  },
+  spoilerIcon: {
+    fontSize: "11px",
+    fontWeight: 700,
+    fontFamily: "'Space Mono', monospace",
+  },
+  spoilerText: {
+    fontSize: "10px",
+    fontFamily: "'Space Mono', monospace",
+    flex: 1,
+  },
+  spoilerReveal: {
+    fontSize: "9px",
+    fontFamily: "'Space Mono', monospace",
+    letterSpacing: ".06em",
+    textDecoration: "underline",
   },
   empty: {
     fontSize: "10px",
@@ -158,7 +269,7 @@ const s: Record<string, React.CSSProperties> = {
   thread: {
     display: "block",
     borderRadius: "4px",
-    padding: "8px 10px",
+    padding: "10px 12px",
     border: "1px solid",
     textDecoration: "none",
     cursor: "pointer",
@@ -167,8 +278,8 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: "11px",
     fontFamily: "'Space Mono', monospace",
     lineHeight: "1.5",
-    marginBottom: "5px",
+    marginBottom: "6px",
   },
-  threadMeta: { display: "flex", gap: "10px" },
+  threadMeta: { display: "flex", gap: "10px", flexWrap: "wrap" },
   metaBit: { fontSize: "9px", fontFamily: "'Space Mono', monospace" },
 };

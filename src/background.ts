@@ -7,6 +7,7 @@ interface RedditPost {
     subreddit: string;
     score: number;
     num_comments: number;
+    created_utc: number;
   };
 }
 
@@ -17,6 +18,7 @@ interface RedditThread {
   score: number;
   numComments: number;
   permalink: string;
+  createdUtc: number;
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -46,6 +48,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
             score: p.data.score,
             numComments: p.data.num_comments,
             permalink: p.data.permalink,
+            createdUtc: p.data.created_utc,
           }))
           .filter((p) => {
             const postTitleLower = p.title.toLowerCase();
@@ -53,9 +56,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
               /discuss|episode|spoiler|reaction|finale|premiere|review/i.test(
                 p.title,
               );
-            const matchesTitleWords =
-              titleWords.filter((w: string) => postTitleLower.includes(w))
-                .length >= Math.min(2, titleWords.length);
+            const titleWordMatches = titleWords.filter((w: string) =>
+              postTitleLower.includes(w),
+            ).length;
+            const matchesTitleWords = titleWordMatches >= titleWords.length;
             return hasDiscussion && matchesTitleWords;
           })
           .sort((a, b) => b.numComments - a.numComments);

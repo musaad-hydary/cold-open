@@ -32,6 +32,8 @@ function getPageTitle(): string {
     .replace(/\s+[-–|]\s+IMDb\s*$/i, "")
     .replace(/\s+[-–|]\s+TV.*$/i, "")
     .replace(/["""'']/g, "")
+    .replace(/\s+eps?\d+\.\d+.*$/i, "")
+    .replace(/\s+S\d+\.E\d+.*$/i, "")
     .trim();
 }
 
