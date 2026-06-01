@@ -13,11 +13,11 @@ A Chrome/Arc browser extension that injects IMDB ratings into Reddit episode and
 - Show poster
 - For season threads: per-episode ratings, highest/lowest rated episodes, and season average
 
-![Cold Open screenshot](public/screenshot.png)
+![Cold Open screenshot](public/screenshot-reddit.png)
 
 **On IMDB**: when you're on an episode or movie page, Cold Open searches Reddit for relevant discussion threads and injects a card linking to them.
 
-![Cold Open screenshot](public/screenshot2.png)
+![Cold Open screenshot](public/screenshot-imdb.png)
 
 ## Supported thread formats
 
