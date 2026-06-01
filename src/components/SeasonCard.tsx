@@ -341,7 +341,7 @@ const s: Record<string, React.CSSProperties> = {
   },
   posterThumb: {
     width: "100%",
-    aspectRatio: "1/1" as unknown as number,
+    aspectRatio: "2/3" as unknown as number,
     borderRadius: "4px",
     objectFit: "cover" as const,
     objectPosition: "center top",
